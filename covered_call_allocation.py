@@ -50,18 +50,69 @@ total_profit = 0
 
 for label, percent in allocations.items():
     strike, premium = strike_options[label]
-    tokens = total_peaq * (percent / 100)
-    profit = tokens * (strike + (premium / 100))
+    tokens = total_peaq * (percent / 100.0)
+    profit = tokens * (strike * (1 + premium / 100.0))
     labels.append(f"{label} (Prem {premium}%)")
     values.append(percent)
     profits.append(profit)
     total_profit += profit
+    
 
 # ---- PIE CHART ----
 fig = go.Figure(data=[go.Pie(labels=labels, values=values, hole=0.4)])
 fig.update_layout(title_text='Token Allocation by Strike Price')
 
 st.plotly_chart(fig, use_container_width=True)
+
+# ---- PREMIUM VS STRIKE PROFIT ----
+# Compute premium and strike parts
+total_premium_part = 0
+total_conversion_part = 0
+
+for label, percent in allocations.items():
+    strike, premium = strike_options[label]
+    tokens = total_peaq * (percent / 100)
+    total_premium_part += tokens * strike * (premium / 100)
+    total_conversion_part += tokens * strike
+
+# Percent split
+upfront_percent = (total_premium_part / total_profit) * 100
+conversion_percent = 100 - upfront_percent
+
+# Bar chart showing profit composition
+st.markdown("### 💡 Profit Composition")
+
+fig_bar = go.Figure()
+
+fig_bar.add_trace(go.Bar(
+    y=["Total Profit"],
+    x=[total_premium_part],
+    name=f"Upfront Premium ({upfront_percent:.1f}%)",
+    orientation='h',
+    marker_color="#1f77b4",
+    hovertemplate='Upfront Premium: %{x:,.2f} USDT<extra></extra>',
+))
+
+fig_bar.add_trace(go.Bar(
+    y=["Total Profit"],
+    x=[total_conversion_part],
+    name=f"Strike Conversion ({conversion_percent:.1f}%)",
+    orientation='h',
+    marker_color="#2ca02c",
+    hovertemplate='Strike Conversion: %{x:,.2f} USDT<extra></extra>',
+))
+
+fig_bar.update_layout(
+    barmode='stack',
+    height=180,
+    xaxis_title="USDT",
+    title="Total Profit Breakdown",
+    showlegend=True,
+    margin=dict(t=40, b=40)
+)
+
+st.plotly_chart(fig_bar, use_container_width=True)
+
 
 # ---- TOTAL PROFIT & SAVE BUTTON ----
 st.success(f"💰 **Total Profit: ${total_profit:,.2f} USDT**")
