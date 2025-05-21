@@ -79,6 +79,10 @@ for label, percent in allocations.items():
 upfront_percent = (total_premium_part / total_profit) * 100
 conversion_percent = 100 - upfront_percent
 
+# Format text labels
+premium_label = f"${total_premium_part:,.0f} ({upfront_percent:.1f}%)"
+conversion_label = f"${total_conversion_part:,.0f} ({conversion_percent:.1f}%)"
+
 # Bar chart showing profit composition
 st.markdown("### 💡 Profit Composition")
 
@@ -87,19 +91,23 @@ fig_bar = go.Figure()
 fig_bar.add_trace(go.Bar(
     y=["Total Profit"],
     x=[total_premium_part],
-    name=f"Upfront Premium ({upfront_percent:.1f}%)",
+    name="Upfront Premium",
     orientation='h',
     marker_color="#1f77b4",
-    hovertemplate='Upfront Premium: %{x:,.2f} USDT<extra></extra>',
+    text=[premium_label],
+    textposition='inside',
+    hovertemplate='Upfront Premium: %{x:,.0f} USDT<extra></extra>',
 ))
 
 fig_bar.add_trace(go.Bar(
     y=["Total Profit"],
     x=[total_conversion_part],
-    name=f"Strike Conversion ({conversion_percent:.1f}%)",
+    name="Strike Conversion",
     orientation='h',
     marker_color="#2ca02c",
-    hovertemplate='Strike Conversion: %{x:,.2f} USDT<extra></extra>',
+    text=[conversion_label],
+    textposition='inside',
+    hovertemplate='Strike Conversion: %{x:,.0f} USDT<extra></extra>',
 ))
 
 fig_bar.update_layout(
