@@ -15,11 +15,12 @@ total_peaq = 1_200_000  # total tokens
 
 # Strike price options and their corresponding fixed premiums
 strike_options = {
-    "90%": (0.90*0.15, 13.00),
-    "95%": (0.95*0.15, 9.70),
-    "100%": (1.00*0.15, 7.45),
-    "105%": (1.05*0.15, 5.50),
-    "110%": (1.10*0.15, 3.86),
+    "80%": (0.80*0.15, 20.5),
+    "90%": (0.90*0.15, 13.39),
+    "95%": (0.95*0.15, 10.29),
+    "100%": (1.00*0.15, 7.72),
+    "105%": (1.05*0.15, 5.71),
+    "110%": (1.10*0.15, 4.17),
 }
 
 st.markdown("Adjust how you'd like to allocate your **1.2M $PEAQ tokens** across the available strike prices:")
