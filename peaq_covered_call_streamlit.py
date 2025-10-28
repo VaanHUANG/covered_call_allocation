@@ -259,7 +259,7 @@ opt_df = pd.DataFrame(rows).sort_values(["tenor_days", "strike_mult"]).reset_ind
 # Compute per-token EV (in units of spot) for reference
 opt_df["sale_per_token_in_spot"] = opt_df["strike_mult"] + opt_df["premium_frac"]
 #opt_df["ev_per_token_in_spot"] = opt_df["premium_frac"] + opt_df["p_exercise"] * opt_df["strike_mult"]
-#opt_df["premium_only_in_spot"] = opt_df["premium_frac"]
+opt_df["premium_only_in_spot"] = opt_df["premium_frac"]
 
 # ---- UI: ALLOCATION SLIDERS ----
 st.markdown("### Allocation by Tenor & Strike")
@@ -303,11 +303,11 @@ for (tenor, strike), pct in alloc_perc.items():
     p_ex = sub["p_exercise"]
     prem = sub["premium_frac"]
     #ev_per_token_spot = sub["ev_per_token_in_spot"]  # premium + p_ex * strike
-    #prem_only_spot = sub["premium_only_in_spot"]
+    prem_only_spot = sub["premium_only_in_spot"]
 
     # Convert to USDT
     #ev_usdt = tokens * ev_per_token_spot * current_spot
-    #prem_only_usdt = tokens * prem_only_spot * current_spot
+    prem_only_usdt = tokens * prem_only_spot * current_spot
     sale_per_token_spot = sub["sale_per_token_in_spot"]     # strike + premium
     sale_usdt           = tokens * sale_per_token_spot * current_spot
 
@@ -327,12 +327,12 @@ for (tenor, strike), pct in alloc_perc.items():
         "Sale (USDT, if exercised)": sale_usdt,
         #"Predicted Spot Multiplier": spot_mult_pred,                     
         #"Predicted Spot Revenue (USDT)": spot_rev_usdt
-        #"Premium-kept-only EV (USDT)": prem_only_usdt,
+        "Premium-kept-only EV (USDT)": prem_only_usdt,
     })
 
 alloc_df = pd.DataFrame(alloc_rows).sort_values(["Tenor (D)", "Strike (x Spot)"])
 #total_ev_usdt = alloc_df["EV (USDT)"].sum()
-#total_prem_only_usdt = alloc_df["Premium-kept-only EV (USDT)"].sum()
+total_prem_only_usdt = alloc_df["Premium-kept-only EV (USDT)"].sum()
 total_sale_usdt = alloc_df["Sale (USDT, if exercised)"].sum()
 #total_spot_rev  = alloc_df["Predicted Spot Revenue (USDT)"].sum()
 
@@ -342,7 +342,7 @@ with k1:
     st.metric("Total Tokens", f"{total_peaq:,.0f}")
 with k2:
     st.metric("Total Sale Proceeds (USDT, if exercised)", f"{total_sale_usdt:,.2f}")
-#with k3: st.metric("Predicted Spot Sale (USDT)", f"{total_spot_rev:,.2f}")
+with k3: st.metric("Total Premiums", f"{total_prem_only_usdt:,.2f}")
 
 # ---- PIE: Allocation Share ----
 st.markdown("### Allocation Mix")
